@@ -1,0 +1,78 @@
+{% extends "base.html" %}
+{% block title %}告警中心{% endblock %}
+
+{% block content %}
+<div class="row mb-3">
+    <div class="col-md-12">
+        <h4 class="text-light">告警中心</h4>
+    </div>
+</div>
+
+<!-- 告警统计 -->
+<div class="row mb-3">
+    <div class="col-md-3">
+        <div class="card bg-danger border-0 text-white text-center">
+            <div class="card-body">
+                <div class="stat-label">严重告警</div>
+                <div class="stat-value" id="critical-count">0</div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card bg-warning border-0 text-dark text-center">
+            <div class="card-body">
+                <div class="stat-label">警告</div>
+                <div class="stat-value" id="warning-count">0</div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card bg-info border-0 text-white text-center">
+            <div class="card-body">
+                <div class="stat-label">信息</div>
+                <div class="stat-value" id="info-count">0</div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card bg-success border-0 text-white text-center">
+            <div class="card-body">
+                <div class="stat-label">已处理</div>
+                <div class="stat-value" id="resolved-count">0</div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- 可疑事件 & 告警列表 -->
+<div class="row mb-3">
+    <div class="col-md-4">
+        <div class="card">
+            <div class="card-header">可疑事件分析</div>
+            <div class="card-body" style="max-height:400px;overflow:auto">
+                <div id="suspicious-events" class="p-3">
+                    <div class="text-muted">加载中...</div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-header d-flex justify-content-between">
+                <span>告警记录</span>
+                <button class="btn btn-sm btn-outline-light" onclick="loadAlerts()">刷新</button>
+            </div>
+            <div class="card-body p-0">
+                <table class="table table-hover mb-0">
+                    <thead><tr><th>级别</th><th>模块</th><th>告警信息</th><th>状态</th><th>时间</th><th>操作</th></tr></thead>
+                    <tbody id="alert-list"></tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="/static/js/alerts.js"></script>
+{% endblock %}

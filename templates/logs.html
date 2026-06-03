@@ -1,0 +1,56 @@
+{% extends "base.html" %}
+{% block title %}日志分析{% endblock %}
+
+{% block content %}
+<div class="row mb-3">
+    <div class="col-md-12">
+        <div class="d-flex justify-content-between align-items-center">
+            <h4 class="text-light">日志分析中心</h4>
+            <button class="btn btn-warning" id="analyze-btn">分析日志</button>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-header">平台运行日志</div>
+            <div class="card-body p-0">
+                <div class="log-viewer" id="log-viewer">
+                    <div class="text-muted p-3">加载中...</div>
+                </div>
+            </div>
+            <div class="card-footer" style="font-size:12px;color:#8b949e;line-height:1.8">
+                <strong>日志级别说明：</strong>
+                <span style="color:#0d6efd">INFO</span> = 正常运行信息（服务启动、定时任务执行） |
+                <span style="color:#ffc107">WARNING</span> = 警告（阈值超标、非关键异常） |
+                <span style="color:#dc3545">ERROR/CRITICAL</span> = 错误/严重（服务故障、安全事件）
+                <br><strong>采集方式：</strong>Flask logging → FileHandler 写入 logs/autoops.log → 本面板每10秒自动刷新读取
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card mb-3">
+            <div class="card-header">安全分析结果</div>
+            <div class="card-body p-0" style="max-height:400px;overflow:auto">
+                <div id="security-result" class="p-3">
+                    <div class="text-muted">点击"分析日志"开始检测...</div>
+                </div>
+            </div>
+            <div class="card-footer" style="font-size:12px;color:#8b949e;line-height:1.8">
+                <strong>检测原理：</strong>读取 logs/auth.log → 关键词匹配(Failed password/invalid user/OOM等) → 正则提取攻击源IP → 按IP聚合统计 → 超过阈值(≥5次)判定为暴力破解
+            </div>
+        </div>
+        <div class="card">
+            <div class="card-header">日志统计</div>
+            <div class="card-body" style="position:relative;height:250px">
+                <canvas id="logChart"></canvas>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="/static/js/logs.js"></script>
+{% endblock %}

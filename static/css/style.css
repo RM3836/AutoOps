@@ -1,0 +1,127 @@
+/* AutoOps 运维平台样式 */
+body {
+    background: #f8f9fa;
+    color: #212529;
+    font-family: -apple-system, "Microsoft YaHei", sans-serif;
+}
+
+.card {
+    border-radius: 6px;
+    margin-bottom: 12px;
+}
+
+.card-header {
+    font-weight: 600;
+    font-size: 14px;
+}
+
+.status-card {
+    border: 1px solid #dee2e6;
+    border-radius: 6px;
+    min-height: 120px;
+    will-change: transform;
+}
+
+.stat-label {
+    font-size: 13px;
+    color: #6c757d;
+    margin-bottom: 5px;
+}
+.stat-value {
+    font-size: 28px;
+    font-weight: 700;
+    color: #0d6efd;
+    font-variant-numeric: tabular-nums;
+}
+
+/* 表格容器 - 防止抖动 */
+.table-container {
+    min-height: 200px;
+    overflow: hidden;
+}
+
+/* 表格 */
+.table {
+    font-size: 13px;
+    table-layout: fixed;
+    width: 100%;
+}
+
+.table td, .table th {
+    vertical-align: middle;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+/* 进度条平滑过渡 */
+.progress-bar {
+    transition: width 0.5s ease-in-out;
+}
+
+/* 徽章颜色过渡 */
+.badge {
+    transition: background-color 0.3s ease;
+}
+
+/* 终端风格 */
+.terminal-output {
+    background: #212529;
+    color: #ced4da;
+    font-family: "Cascadia Code", "Fira Code", monospace;
+    font-size: 13px;
+    padding: 15px;
+    border-radius: 6px;
+    min-height: 350px;
+    max-height: 500px;
+    overflow-y: auto;
+    white-space: pre-wrap;
+    word-break: break-all;
+    line-height: 1.6;
+}
+
+.log-viewer {
+    background: #212529;
+    font-family: "Cascadia Code", monospace;
+    font-size: 12px;
+    padding: 15px;
+    min-height: 500px;
+    max-height: 600px;
+    overflow-y: auto;
+    line-height: 1.8;
+    color: #ced4da;
+}
+.log-line { color: #8b949e; }
+.log-line.error { color: #dc3545; }
+.log-line.warning { color: #ffc107; }
+.log-line.info { color: #0d6efd; }
+
+/* 告警级别 */
+.badge-critical { background: #dc3545; }
+.badge-warning { background: #ffc107; color: #000; }
+.badge-info { background: #0d6efd; }
+
+/* 快捷命令按钮 */
+.quick-cmd {
+    text-align: left;
+    font-family: monospace;
+    font-size: 12px;
+}
+
+/* 列表 */
+.list-group-item {
+    cursor: pointer;
+    font-size: 13px;
+}
+
+/* 防止卡片内容跳动 */
+.card-body {
+    min-height: 60px;
+}
+
+/* 图表容器固定高度 */
+.chart-container {
+    position: relative;
+    height: 300px;
+    width: 100%;
+}

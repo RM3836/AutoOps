@@ -1,0 +1,189 @@
+{% extends "base.html" %}
+{% block title %}运维工具箱{% endblock %}
+
+{% block content %}
+<h4 class="text-light mb-3">运维工具箱 <small class="text-muted">主机扫描 / 端口扫描 / DNS / 进程管理 / 报告导出</small></h4>
+
+<!-- Tab导航 -->
+<ul class="nav nav-tabs mb-3" id="toolTabs">
+    <li class="nav-item"><a class="nav-link active" data-bs-toggle="tab" href="#tab-ping">主机存活检测</a></li>
+    <li class="nav-item"><a class="nav-link" data-bs-toggle="tab" href="#tab-port">端口扫描</a></li>
+    <li class="nav-item"><a class="nav-link" data-bs-toggle="tab" href="#tab-dns">DNS解析</a></li>
+    <li class="nav-item"><a class="nav-link" data-bs-toggle="tab" href="#tab-proc">进程管理</a></li>
+    <li class="nav-item"><a class="nav-link" data-bs-toggle="tab" href="#tab-report">报告导出</a></li>
+</ul>
+
+<div class="tab-content">
+    <!-- 主机存活检测 -->
+    <div class="tab-pane fade show active" id="tab-ping">
+        <div class="row">
+            <div class="col-md-4">
+                <div class="card">
+                    <div class="card-header">批量Ping检测</div>
+                    <div class="card-body">
+                        <div class="mb-3">
+                            <label class="form-label text-light">扫描模式</label>
+                            <select class="form-select" id="ping-mode">
+                                <option value="list">手动输入主机列表</option>
+                                <option value="subnet">扫描子网段</option>
+                            </select>
+                        </div>
+                        <div id="ping-list-input">
+                            <label class="form-label text-light">主机列表（每行一个）</label>
+                            <textarea class="form-control" id="ping-hosts" rows="5"
+                                placeholder="192.168.1.1&#10;192.168.1.2&#10;8.8.8.8"></textarea>
+                        </div>
+                        <div id="ping-subnet-input" style="display:none">
+                            <label class="form-label text-light">子网前缀</label>
+                            <input type="text" class="form-control mb-2" id="ping-subnet" value="192.168.1">
+                            <div class="row">
+                                <div class="col"><input type="number" class="form-control" id="ping-start" value="1" min="1" max="254"></div>
+                                <div class="col"><input type="number" class="form-control" id="ping-end" value="10" min="1" max="254"></div>
+                            </div>
+                        </div>
+                        <button class="btn btn-success w-100 mt-3" id="ping-btn">开始扫描</button>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-8">
+                <div class="card">
+                    <div class="card-header">扫描结果</div>
+                    <div class="card-body p-0" style="max-height:500px;overflow:auto">
+                        <table class="table table-sm mb-0">
+                            <thead><tr><th>主机</th><th>状态</th></tr></thead>
+                            <tbody id="ping-result"><tr><td colspan="2" class="text-muted text-center">等待扫描...</td></tr></tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 端口扫描 -->
+    <div class="tab-pane fade" id="tab-port">
+        <div class="row">
+            <div class="col-md-4">
+                <div class="card">
+                    <div class="card-header">TCP端口扫描</div>
+                    <div class="card-body">
+                        <div class="mb-3">
+                            <label class="form-label text-light">目标主机</label>
+                            <input type="text" class="form-control" id="port-host" value="127.0.0.1">
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label text-light">端口范围（逗号分隔）</label>
+                            <input type="text" class="form-control" id="port-list" value="22,80,443,3306,3389,6379,8080">
+                        </div>
+                        <button class="btn btn-info w-100" id="port-btn">扫描端口</button>
+                    </div>
+                </div>
+                <!-- 常用端口速查 -->
+                <div class="card">
+                    <div class="card-header">常用端口速查表</div>
+                    <div class="card-body p-0">
+                        <table class="table table-sm table-hover mb-0">
+                            <tbody>
+                                <tr><td><code>80</code></td><td>HTTP协议端口</td><td class="text-muted">网站服务</td></tr>
+                                <tr><td><code>443</code></td><td>HTTPS协议端口</td><td class="text-muted">加密网站</td></tr>
+                                <tr><td><code>21</code></td><td>FTP协议端口</td><td class="text-muted">文件传输</td></tr>
+                                <tr><td><code>22</code></td><td>SSH协议端口</td><td class="text-muted">安全远程登录</td></tr>
+                                <tr><td><code>3306</code></td><td>MySQL协议端口</td><td class="text-muted">如无需外部连接可不放行</td></tr>
+                                <tr><td><code>8888</code></td><td>phpMyAdmin端口</td><td class="text-muted">如无需外网使用可不放行</td></tr>
+                                <tr><td><code>6379</code></td><td>Redis协议端口</td><td class="text-muted">缓存数据库</td></tr>
+                                <tr><td><code>3389</code></td><td>RDP协议端口</td><td class="text-muted">Windows远程桌面</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-8">
+                <div class="card">
+                    <div class="card-header">扫描结果</div>
+                    <div class="card-body p-0">
+                        <table class="table table-sm mb-0">
+                            <thead><tr><th>端口</th><th>服务</th><th>状态</th></tr></thead>
+                            <tbody id="port-result"><tr><td colspan="3" class="text-muted text-center">等待扫描...</td></tr></tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- DNS解析 -->
+    <div class="tab-pane fade" id="tab-dns">
+        <div class="row">
+            <div class="col-md-4">
+                <div class="card">
+                    <div class="card-header">DNS域名解析</div>
+                    <div class="card-body">
+                        <div class="mb-3">
+                            <label class="form-label text-light">域名</label>
+                            <input type="text" class="form-control" id="dns-domain" placeholder="www.baidu.com">
+                        </div>
+                        <button class="btn btn-warning w-100" id="dns-btn">解析域名</button>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-8">
+                <div class="card">
+                    <div class="card-header">解析结果</div>
+                    <div class="card-body" id="dns-result">
+                        <div class="text-muted">输入域名点击解析...</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 进程管理 -->
+    <div class="tab-pane fade" id="tab-proc">
+        <div class="card">
+            <div class="card-header d-flex justify-content-between">
+                <span>进程管理</span>
+                <div>
+                    <button class="btn btn-sm btn-outline-info" onclick="loadProcList('cpu')">按CPU排序</button>
+                    <button class="btn btn-sm btn-outline-info" onclick="loadProcList('mem')">按内存排序</button>
+                    <button class="btn btn-sm btn-outline-warning" onclick="loadProcList()">刷新</button>
+                </div>
+            </div>
+            <div class="card-body p-0" style="max-height:500px;overflow:auto">
+                <table class="table table-sm mb-0">
+                    <thead><tr><th>PID</th><th>名称</th><th>用户</th><th>CPU%</th><th>内存%</th><th>状态</th><th>操作</th></tr></thead>
+                    <tbody id="proc-list"></tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- 报告导出 -->
+    <div class="tab-pane fade" id="tab-report">
+        <div class="row">
+            <div class="col-md-4">
+                <div class="card">
+                    <div class="card-header">报告导出</div>
+                    <div class="card-body">
+                        <button class="btn btn-primary w-100 mb-2" id="gen-report-btn">生成HTML巡检报告</button>
+                        <button class="btn btn-secondary w-100 mb-2" id="export-csv-btn">导出CSV数据</button>
+                        <div id="export-status" class="text-muted mt-2"></div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-8">
+                <div class="card">
+                    <div class="card-header">说明</div>
+                    <div class="card-body text-light">
+                        <p><strong>HTML巡检报告:</strong> 自动生成包含CPU/内存/磁盘状态的可视化报告</p>
+                        <p><strong>CSV导出:</strong> 导出最近100条监控数据为CSV表格</p>
+                        <p class="text-muted">报告保存在 logs/ 目录下</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="/static/js/tools.js"></script>
+{% endblock %}

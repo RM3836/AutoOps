@@ -1,0 +1,23 @@
+---
+# Ansible 批量用户管理 ( 来自实验08)
+- name: 批量添加用户和组
+  hosts: all
+  vars:
+    group_name: ops_team
+  tasks:
+    - name: 创建运维组
+      ansible.builtin.group:
+        name: "{{ group_name }}"
+        state: present
+
+    - name: 批量创建用户
+      ansible.builtin.user:
+        name: "{{ item.name }}"
+        password: "{{ item.pwd | password_hash('sha512') }}"
+        groups: "{{ group_name }}"
+        append: yes
+        state: present
+      loop:
+        - { name: "ops01", pwd: "AutoOps@2026" }
+        - { name: "ops02", pwd: "AutoOps@2026" }
+        - { name: "ops03", pwd: "AutoOps@2026" }

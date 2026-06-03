@@ -1,0 +1,80 @@
+{% extends "base.html" %}
+{% block title %}SSH远程运维{% endblock %}
+
+{% block content %}
+<div class="row">
+    <!-- 左侧: 主机列表 + 添加 -->
+    <div class="col-md-4">
+        <div class="card mb-3">
+            <div class="card-header d-flex justify-content-between">
+                <span>服务器列表</span>
+                <button class="btn btn-sm btn-success" data-bs-toggle="modal" data-bs-target="#addModal">+ 添加</button>
+            </div>
+            <div class="card-body p-0" style="max-height:400px;overflow:auto">
+                <div class="list-group list-group-flush" id="host-list"></div>
+            </div>
+        </div>
+        <!-- 快捷命令 -->
+        <div class="card">
+            <div class="card-header text-light">快捷命令</div>
+            <div class="card-body">
+                <div class="d-grid gap-2">
+                    <button class="btn btn-outline-info btn-sm quick-cmd" data-cmd="df -h">df -h (磁盘)</button>
+                    <button class="btn btn-outline-info btn-sm quick-cmd" data-cmd="free -m">free -m (内存)</button>
+                    <button class="btn btn-outline-info btn-sm quick-cmd" data-cmd="top -bn1 | head -20">top (进程)</button>
+                    <button class="btn btn-outline-info btn-sm quick-cmd" data-cmd="uname -a">uname -a (系统)</button>
+                    <button class="btn btn-outline-info btn-sm quick-cmd" data-cmd="netstat -tlnp">netstat (端口)</button>
+                    <button class="btn btn-outline-info btn-sm quick-cmd" data-cmd="ps aux --sort=-%cpu | head -10">高CPU进程</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 右侧: 终端 -->
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-header d-flex justify-content-between">
+                <span>SSH 终端</span>
+                <span class="text-muted" id="current-host">未选择</span>
+            </div>
+            <div class="card-body">
+                <div class="terminal-output" id="terminal-output">
+                    <div class="text-muted">请先选择服务器，然后输入命令...</div>
+                </div>
+                <div class="input-group mt-2">
+                    <span class="input-group-text">$</span>
+                    <input type="text" class="form-control" id="cmd-input" placeholder="输入Linux命令..." disabled>
+                    <button class="btn btn-success" id="exec-btn" disabled>执行</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- 添加主机弹窗 -->
+<div class="modal fade" id="addModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header border-secondary">
+                <h5 class="modal-title">添加服务器</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <div class="mb-3"><label class="form-label">主机地址</label><input type="text" class="form-control" id="add-host" placeholder="192.168.1.100"></div>
+                <div class="mb-3"><label class="form-label">端口</label><input type="number" class="form-control" id="add-port" value="22"></div>
+                <div class="mb-3"><label class="form-label">用户名</label><input type="text" class="form-control" id="add-user" placeholder="root"></div>
+                <div class="mb-3"><label class="form-label">密码</label><input type="password" class="form-control" id="add-pass"></div>
+                <div class="mb-3"><label class="form-label">描述</label><input type="text" class="form-control" id="add-desc" placeholder="Web服务器"></div>
+            </div>
+            <div class="modal-footer border-secondary">
+                <button class="btn btn-secondary" data-bs-dismiss="modal">取消</button>
+                <button class="btn btn-success" id="save-host">保存</button>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="/static/js/ssh.js"></script>
+{% endblock %}

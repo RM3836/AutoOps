@@ -1,0 +1,135 @@
+{% extends "base.html" %}
+{% block title %}服务器详情{% endblock %}
+
+{% block content %}
+<!-- CPU 信息 -->
+<div class="row mb-3">
+    <div class="col-md-12">
+        <div class="card">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <span>CPU 信息</span>
+                <span class="badge bg-info" id="cpu-usage-badge">--</span>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-4">
+                        <table class="table table-sm mb-0" style="font-size:14px">
+                            <tr><td class="text-muted" width="100">型号</td><td id="cpu-model" style="word-break:break-all">--</td></tr>
+                            <tr><td class="text-muted">物理核心</td><td id="cpu-physical">--</td></tr>
+                            <tr><td class="text-muted">逻辑核心</td><td id="cpu-logical">--</td></tr>
+                            <tr><td class="text-muted">当前频率</td><td id="cpu-freq-cur">--</td></tr>
+                            <tr><td class="text-muted">最大频率</td><td id="cpu-freq-max">--</td></tr>
+                        </table>
+                    </div>
+                    <div class="col-md-8">
+                        <div class="mb-2" style="font-size:14px"><strong>各核心使用率</strong></div>
+                        <div id="cpu-cores" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(50px,1fr));gap:4px"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- 内存信息 -->
+<div class="row mb-3">
+    <div class="col-md-12">
+        <div class="card">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <span>内存信息</span>
+                <span class="badge bg-success" id="mem-usage-badge">--</span>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-3 text-center">
+                        <div style="position:relative;height:140px"><canvas id="memChart"></canvas></div>
+                        <div class="mt-2" style="font-size:12px">
+                            <span style="color:#dc3545">●</span> 应用
+                            <span style="color:#ffc107">●</span> Buffers
+                            <span style="color:#0d6efd">●</span> Cached
+                            <span style="color:#198754">●</span> 空闲
+                        </div>
+                    </div>
+                    <div class="col-md-9">
+                        <table class="table table-sm mb-0" style="font-size:14px">
+                            <tr>
+                                <td class="text-muted" width="100">总内存</td><td id="mem-total" style="font-variant-numeric:tabular-nums">--</td>
+                                <td class="text-muted" width="100">已使用</td><td id="mem-used" style="font-variant-numeric:tabular-nums">--</td>
+                            </tr>
+                            <tr>
+                                <td class="text-muted">可用内存</td><td id="mem-avail" style="font-variant-numeric:tabular-nums">--</td>
+                                <td class="text-muted">使用率</td><td id="mem-percent" style="font-variant-numeric:tabular-nums">--</td>
+                            </tr>
+                            <tr>
+                                <td class="text-muted">Buffers</td><td id="mem-buffers" style="font-variant-numeric:tabular-nums">--</td>
+                                <td class="text-muted">Cached</td><td id="mem-cached" style="font-variant-numeric:tabular-nums">--</td>
+                            </tr>
+                            <tr>
+                                <td class="text-muted">Swap 总量</td><td id="swap-total" style="font-variant-numeric:tabular-nums">--</td>
+                                <td class="text-muted">Swap 已用</td><td id="swap-used" style="font-variant-numeric:tabular-nums">--</td>
+                            </tr>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- 磁盘分区 -->
+<div class="row mb-3">
+    <div class="col-md-12">
+        <div class="card">
+            <div class="card-header">磁盘分区信息</div>
+            <div class="card-body p-0">
+                <div class="table-responsive">
+                    <table class="table table-sm table-hover mb-0" style="font-size:13px">
+                        <thead>
+                            <tr><th>挂载点</th><th>设备</th><th>文件系统</th><th>总大小</th><th>已用</th><th>可用</th><th>使用率</th><th>Inode总量</th><th>Inode已用</th><th>Inode可用</th></tr>
+                        </thead>
+                        <tbody id="disk-table"></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- 网卡 + 磁盘IO -->
+<div class="row mb-3">
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header">网卡流量信息</div>
+            <div class="card-body p-0">
+                <div class="table-responsive">
+                    <table class="table table-sm table-hover mb-0" style="font-size:13px">
+                        <thead>
+                            <tr><th>网卡</th><th>IPv4</th><th>上行(MB)</th><th>下行(MB)</th><th>发包</th><th>收包</th><th>入错</th><th>出错</th></tr>
+                        </thead>
+                        <tbody id="net-table"></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header">磁盘 IO 信息</div>
+            <div class="card-body p-0">
+                <div class="table-responsive">
+                    <table class="table table-sm table-hover mb-0" style="font-size:13px">
+                        <thead>
+                            <tr><th>设备</th><th>读次数</th><th>写次数</th><th>读取(MB)</th><th>写入(MB)</th><th>读延迟(ms)</th><th>写延迟(ms)</th></tr>
+                        </thead>
+                        <tbody id="io-table"></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="/static/js/server.js"></script>
+{% endblock %}

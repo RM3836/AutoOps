@@ -8,3 +8,15 @@ logs/
 *.log
 .env
 *.tmp
+
+# 课程材料和个人信息
+.hermes/
+docs/*.pptx
+docs/*.doc
+docs/*.docx
+plan.md
+模拟入侵.bat
+流程模拟项目结构树.txt
+Docker化与Prometheus监控改造方案.md
+GitHub上传操作指南.md
+auto-ops-course_优化与脚本化建议.md

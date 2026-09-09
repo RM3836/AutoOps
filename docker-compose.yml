@@ -1,0 +1,49 @@
+# AutoOps 容器编排 + 监控栈
+version: "3.8"
+
+services:
+  # ===== AutoOps 应用本体 =====
+  autoops:
+    build: .
+    container_name: autoops
+    ports:
+      - "5000:5000"
+    volumes:
+      # 数据卷持久化：容器删除后数据不丢
+      - autoops-db:/app/database
+      - autoops-logs:/app/logs
+    restart: unless-stopped
+
+  # ===== Prometheus 监控 =====
+  prometheus:
+    image: prom/prometheus:latest
+    container_name: prometheus
+    ports:
+      - "9090:9090"
+    volumes:
+      # 挂载配置文件和抓取规则
+      - ./prometheus.yml:/etc/prometheus/prometheus.yml:ro
+      - ./alert.rules.yml:/etc/prometheus/alert.rules.yml:ro
+      - prometheus-data:/prometheus
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+    restart: unless-stopped
+
+  # ===== Grafana 可视化 =====
+  grafana:
+    image: grafana/grafana:latest
+    container_name: grafana
+    ports:
+      - "3000:3000"
+    volumes:
+      - grafana-data:/var/lib/grafana
+    environment:
+      - GF_SECURITY_ADMIN_PASSWORD=admin123   # 初始密码，登录后改
+    restart: unless-stopped
+
+# 命名数据卷（自动创建，跨容器重启持久化）
+volumes:
+  autoops-db:
+  autoops-logs:
+  prometheus-data:
+  grafana-data:

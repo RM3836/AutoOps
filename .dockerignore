@@ -1,0 +1,17 @@
+# Docker 构建上下文忽略文件（避免把 venv、数据库、日志等打进镜像）
+venv/
+__pycache__/
+*.pyc
+*.pyo
+.vscode/
+*.db
+logs/
+data/
+*.log
+.env
+*.tmp
+.git/
+.gitignore
+Dockerfile
+docker-compose.yml
+*.md

@@ -1,0 +1,26 @@
+---
+# Ansible 批量用户管理
+# 密码通过外部变量传入（生产环境建议用 ansible-vault 加密，勿明文提交）
+- name: 批量添加用户和组
+  hosts: all
+  vars:
+    group_name: ops_team
+    # 用 ansible-playbook -e "user_password=你的密码" 传入，或改用 vault
+    user_password: "{{ user_password | default('ChangeMe@123') }}"
+  tasks:
+    - name: 创建运维组
+      ansible.builtin.group:
+        name: "{{ group_name }}"
+        state: present
+
+    - name: 批量创建用户
+      ansible.builtin.user:
+        name: "{{ item }}"
+        password: "{{ user_password | password_hash('sha512') }}"
+        groups: "{{ group_name }}"
+        append: yes
+        state: present
+      loop:
+        - ops01
+        - ops02
+        - ops03

@@ -1,0 +1,6 @@
+---
+# AutoOps Ansible 入口文件
+# 用法: ansible-playbook -i hosts site.yml
+
+- import_playbook: system_init.yml
+- import_playbook: batch_users.yml

@@ -1,0 +1,101 @@
+{% extends "base.html" %}
+{% block title %}仪表盘{% endblock %}
+
+{% block content %}
+<!-- 状态卡片 -->
+<div class="row mb-3">
+    <div class="col-md-3">
+        <div class="card status-card border-0">
+            <div class="card-body text-center">
+                <div class="stat-label">CPU 使用率</div>
+                <div class="stat-value" id="cpu-val">--%</div>
+                <div class="progress mt-2"><div class="progress-bar bg-info" id="cpu-bar" style="width:0%"></div></div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card status-card border-0">
+            <div class="card-body text-center">
+                <div class="stat-label">内存使用率</div>
+                <div class="stat-value" id="mem-val">--%</div>
+                <div class="progress mt-2"><div class="progress-bar bg-success" id="mem-bar" style="width:0%"></div></div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card status-card border-0">
+            <div class="card-body text-center">
+                <div class="stat-label">磁盘使用率</div>
+                <div class="stat-value" id="disk-val">--%</div>
+                <div class="progress mt-2"><div class="progress-bar bg-warning" id="disk-bar" style="width:0%"></div></div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card status-card border-0">
+            <div class="card-body text-center">
+                <div class="stat-label">进程数</div>
+                <div class="stat-value" id="proc-val">--</div>
+                <div class="text-muted mt-2" id="platform-info">--</div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- 图表 -->
+<div class="row mb-3">
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-header text-light">实时监控趋势</div>
+            <div class="card-body chart-container">
+                <canvas id="trendChart"></canvas>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card">
+            <div class="card-header text-light">系统信息</div>
+            <div class="card-body">
+                <table class="table table-dark table-sm">
+                    <tr><td>CPU核心数</td><td id="cpu-count">--</td></tr>
+                    <tr><td>内存总量</td><td id="mem-total">-- GB</td></tr>
+                    <tr><td>磁盘总量</td><td id="disk-total">-- GB</td></tr>
+                    <tr><td>网络发送</td><td id="net-sent">-- MB</td></tr>
+                    <tr><td>网络接收</td><td id="net-recv">-- MB</td></tr>
+                    <tr><td>平台</td><td id="sys-platform">--</td></tr>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- 进程列表 + 最近告警 -->
+<div class="row">
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header text-light">Top 进程</div>
+            <div class="card-body p-0 table-container" style="max-height:300px;overflow:auto">
+                <table class="table table-dark table-sm mb-0">
+                    <thead><tr><th>PID</th><th>名称</th><th>CPU%</th><th>内存%</th></tr></thead>
+                    <tbody id="proc-table"></tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header text-light">最近告警</div>
+            <div class="card-body p-0 table-container" style="max-height:300px;overflow:auto">
+                <table class="table table-dark table-sm mb-0">
+                    <thead><tr><th>级别</th><th>模块</th><th>信息</th><th>时间</th></tr></thead>
+                    <tbody id="alert-table"></tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="/static/js/dashboard.js"></script>
+{% endblock %}

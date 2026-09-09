@@ -1,0 +1,54 @@
+---
+# Ansible 系统初始化 Playbook 
+- name: CentOS系统初始化
+  hosts: all
+  tasks:
+    - name: 设置时区
+      ansible.builtin.command: timedatectl set-timezone Asia/Shanghai
+
+    - name: 关闭SELinux
+      ansible.builtin.selinux:
+        state: disabled
+
+    - name: 安装基础软件包
+      ansible.builtin.yum:
+        name:
+          - vim
+          - wget
+          - curl
+          - net-tools
+          - lsof
+          - htop
+          - tree
+        state: latest
+
+    - name: 配置NTP时间同步
+      ansible.builtin.shell: |
+        yum install -y chrony
+        systemctl enable chronyd
+        systemctl start chronyd
+      args:
+        warn: no
+
+    - name: 配置SSH安全加固
+      ansible.builtin.lineinfile:
+        path: /etc/ssh/sshd_config
+        regexp: "{{ item.regexp }}"
+        line: "{{ item.line }}"
+      loop:
+        - { regexp: "^#?PermitRootLogin", line: "PermitRootLogin prohibit-password" }
+        - { regexp: "^#?PasswordAuthentication", line: "PasswordAuthentication yes" }
+        - { regexp: "^#?MaxAuthTries", line: "MaxAuthTries 3" }
+      notify: restart sshd
+
+    - name: 关闭防火墙(测试环境)
+      ansible.builtin.systemd:
+        name: firewalld
+        state: stopped
+        enabled: no
+
+  handlers:
+    - name: restart sshd
+      ansible.builtin.systemd:
+        name: sshd
+        state: restarted

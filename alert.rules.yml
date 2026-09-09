@@ -1,0 +1,33 @@
+# Prometheus 告警规则
+groups:
+  - name: autoops-alerts
+    rules:
+      # CPU 使用率超过 80% 持续 1 分钟 → 告警
+      - alert: HighCPUUsage
+        expr: autoops_cpu_usage_percent > 80
+        for: 1m
+        labels:
+          severity: warning
+        annotations:
+          summary: "CPU 使用率过高"
+          description: "当前 CPU 使用率 {{ $value }}%，超过 80% 阈值"
+
+      # 内存使用率超过 85% 持续 1 分钟 → 告警
+      - alert: HighMemoryUsage
+        expr: autoops_memory_usage_percent > 85
+        for: 1m
+        labels:
+          severity: warning
+        annotations:
+          summary: "内存使用率过高"
+          description: "当前内存使用率 {{ $value }}%，超过 85% 阈值"
+
+      # 磁盘使用率超过 90% → 告警
+      - alert: HighDiskUsage
+        expr: autoops_disk_usage_percent > 90
+        for: 1m
+        labels:
+          severity: critical
+        annotations:
+          summary: "磁盘使用率过高"
+          description: "当前磁盘使用率 {{ $value }}%，超过 90% 阈值"
